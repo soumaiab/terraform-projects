@@ -35,7 +35,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", handler)
-	addr := ":8888"
+	addr := ":8080"
 	fmt.Println("Listening on", addr)
 	_ = http.ListenAndServe(addr, nil)
 }
