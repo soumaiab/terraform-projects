@@ -63,3 +63,28 @@ To update the message:
 > tofu apply -auto-approve -var="app_message=Hello Soumaia 🚀"
 
 
+#### Stopping minikube:
+> minikube stop
+
+#### Restarting it
+
+Start Minikube back up
+> minikube start
+
+Check that your namespace & deployment are still there
+> kubectl get ns
+
+> kubectl -n hello get deploy hello-go
+
+> kubectl -n hello get pods -l app=hello-go
+
+If you see a pod with STATUS=Running, the Go app is up again.
+
+Port-forward the Service
+> kubectl -n hello port-forward svc/hello-go 8080:80
+
+If the pod isn’t running
+> minikube image build -t hellogo:0.3 .
+
+Restart deployment so it picks up the image
+> kubectl -n hello rollout restart deploy/hello-go
