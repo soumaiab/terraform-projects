@@ -1,3 +1,4 @@
 **/.terraform/
 .terraform.lock.hcl
 server.exe
+terraform.tfstate*

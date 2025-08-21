@@ -39,12 +39,13 @@ Since it wasn't set by tofu, we should see (APP_MESSAGE not set).
 On Ubuntu from the source folder:
 > minikube image build -t hellogo:0.<TAG NUM> .
 
-If anything changes in the go code, rebuild and increase the tag number. It is currently hellogo:0.2
+If anything changes in the go code, rebuild and increase the tag number. It is currently hellogo:0.3
 
 
-Apply the message:
+Apply changes made to providers (only run if not done before/not changes):
 > tofu init -upgrade
 
+Apply the message
 > tofu apply -auto-approve -var="app_message=Hello from OpenTofu!"
 
 Ensure it got deployed:

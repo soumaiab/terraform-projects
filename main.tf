@@ -27,7 +27,7 @@ resource "kubernetes_deployment" "hello_go" {
       spec {
         container {
           name  = "server"
-          image = "hellogo:0.2"         # built into Minikube
+          image = "hellogo:0.3"         # built into Minikube
           image_pull_policy = "IfNotPresent"
 
           port { container_port = 8080 }

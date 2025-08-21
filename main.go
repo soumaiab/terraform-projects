@@ -17,7 +17,7 @@ var page = template.Must(template.New("index").Parse(`
   <style>body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:2rem} code{background:#f6f8fa;padding:.2rem .4rem;border-radius:4px}</style>
 </head>
 <body>
-  <h1>Hello, world 👋</h1>
+  <h1>Hello, world 👋!</h1>
   <p>Message from <code>APP_MESSAGE</code> (set in Terraform):</p>
   <h2>{{.Message}}</h2>
 </body>
