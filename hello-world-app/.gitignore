@@ -2,3 +2,4 @@
 .terraform.lock.hcl
 server.exe
 terraform.tfstate*
+**/hashicorp/
