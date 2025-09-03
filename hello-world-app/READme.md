@@ -51,7 +51,7 @@ Apply the message
 Ensure it got deployed:
 > kubectl -n hello get deploy hello-go
 
-> kubectl -n hello get pods -l app=hello-go
+> kubectl -n hello get pods -l 'app.kubernetes.io/name=hello-go'
 
 > kubectl -n hello logs deploy/hello-go
 
@@ -60,8 +60,12 @@ Should see: "Listening on :8080".
 To run it:
 > kubectl -n hello port-forward svc/hello-go 8080:80
 
-To update the message:
-> tofu apply -auto-approve -var="app_message=Hello Soumaia 🚀"
+To update the message, change the value in terraform.tfvars and run:
+> tofu apply -auto-approve
+
+> kubectl -n hello rollout status deploy/hello-go
+
+> kubectl -n hello port-forward svc/hello-go 8080:80
 
 
 #### Stopping minikube:
@@ -77,7 +81,7 @@ Check that your namespace & deployment are still there
 
 > kubectl -n hello get deploy hello-go
 
-> kubectl -n hello get pods -l app=hello-go
+> kubectl -n hello get pods -l 'app.kubernetes.io/name=hello-go'
 
 If you see a pod with STATUS=Running, the Go app is up again.
 

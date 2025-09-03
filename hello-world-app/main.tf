@@ -1,60 +1,43 @@
-resource "helm_release" "hello" {
-  name       = "hello-world-softonic"
-  repository = "https://charts.softonic.io"
-  chart      = "hello-world-app"
-  version    = "1.2.2"
-}
+# resource "helm_release" "hello" {
+#  name       = "hello-world-softonic"
+#  repository = "https://charts.softonic.io"
+#  chart      = "hello-world-app"
+#  version    = "1.2.2"
+# }
 
 # Optional: isolate in its own namespace
 resource "kubernetes_namespace" "hello" {
   metadata { name = "hello" }
 }
 
-resource "kubernetes_deployment" "hello_go" {
+# Secret for env
+resource "kubernetes_secret" "hello_env" {
   metadata {
-    name      = "hello-go"
+    name      = "hello-go-secret"
     namespace = kubernetes_namespace.hello.metadata[0].name
-    labels = { app = "hello-go" }
   }
-
-  spec {
-    replicas = 1
-    selector { match_labels = { app = "hello-go" } }
-
-    template {
-      metadata { labels = { app = "hello-go" } }
-
-      spec {
-        container {
-          name  = "server"
-          image = "hellogo:0.3"         # built into Minikube
-          image_pull_policy = "IfNotPresent"
-
-          port { container_port = 8080 }
-
-          env {
-            name  = "APP_MESSAGE"
-            value = var.app_message      # <- comes from Terraform
-          }
-        }
-      }
-    }
+  data = {
+    APP_MESSAGE = var.app_message   
   }
 }
 
-resource "kubernetes_service" "hello_go" {
-  metadata {
-    name      = "hello-go"
-    namespace = kubernetes_namespace.hello.metadata[0].name
-    labels    = { app = "hello-go" }
-  }
+# Replaces deployment + service and gets the values for those from values.yml
+resource "helm_release" "hello_go" {
+  repository       = "https://stakater.github.io/stakater-charts"
+  chart            = "application"
+  version          = "6.0.0"
 
-  spec {
-    selector = { app = "hello-go" }
-    port {
-      port        = 80
-      target_port = 8080
-    }
-    type = "ClusterIP"
-  }
+  name             = "hello-go"
+  namespace        = kubernetes_namespace.hello.metadata[0].name
+  create_namespace = false
+
+  values = [
+    templatefile("${path.module}/values.yml", {
+      # Injecting those values in the yml file
+      env_secret_name  = kubernetes_secret.hello_env.metadata[0].name
+      image_repository = "hellogo"   # your local Minikube image name
+      image_tag        = "0.3"       # matches your Docker tag
+    })
+  ]
 }
+

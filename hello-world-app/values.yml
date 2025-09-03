@@ -1,0 +1,47 @@
+# values.yml
+applicationName: "hello-go"   # will become Deployment/Service name
+
+deployment:
+  enabled: true
+  replicas: 1
+
+  # If you like running as non-root, keep this. Otherwise remove this block.
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+
+  # Load env vars from the Secret Terraform creates
+  env:
+    - name: APP_MESSAGE
+      valueFrom:
+        secretKeyRef:
+          name: "${ env_secret_name }"
+          key: APP_MESSAGE
+
+  image:
+    repository: "${ image_repository }"
+    tag: "${ image_tag }"
+    pullPolicy: IfNotPresent
+
+  # Your app listens on 8080
+  ports:
+    - name: http
+      containerPort: 8080
+
+  # Keep probes off until you add /healthz
+  readinessProbe:
+    enabled: false
+  livenessProbe:
+    enabled: false
+
+service:
+  enabled: true
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+
+ingress:
+  enabled: false
