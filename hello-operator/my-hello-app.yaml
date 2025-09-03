@@ -6,3 +6,4 @@ metadata:
 spec:
   replicas: 1
   image: hellogo:0.3
+  secretName: env-secret-name

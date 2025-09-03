@@ -77,6 +77,11 @@ func main() {
 				image = i
 			}
 
+			secretName := ""
+			if s, ok := spec["secretName"].(string); ok {
+				secretName = s
+			}
+
 			fmt.Printf("Reconciling HelloApp %s → replicas=%d, image=%s\n", name, replicas, image)
 
 			// desired Deployment
@@ -101,6 +106,19 @@ func main() {
 								Ports: []corev1.ContainerPort{{
 									ContainerPort: 8080,
 								}},
+								Env: []corev1.EnvVar{
+									{
+										Name: "APP_MESSAGE",
+										ValueFrom: &corev1.EnvVarSource{
+											SecretKeyRef: &corev1.SecretKeySelector{
+												LocalObjectReference: corev1.LocalObjectReference{
+													Name: secretName,
+												},
+												Key: "APP_MESSAGE",
+											},
+										},
+									},
+								},
 							}},
 						},
 					},

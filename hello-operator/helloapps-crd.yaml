@@ -26,6 +26,8 @@ spec:
                   default: 1
                 image:
                   type: string
+                secretName:
+                  type: string
             status:
               type: object
               properties:

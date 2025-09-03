@@ -1,24 +1,39 @@
-Ran:
+# Operator User Guide
 
-## Set up a plain Go project
+## Setup
+The image should already exist.
 
-mkdir hello-operator
-cd hello-operator
-go mod init example.com/hello-operator
+Applying the yamls:
+> kubectl apply -f env-secret.yaml
 
-go get k8s.io/client-go@latest
-go get k8s.io/apimachinery@latest
+> kubectl apply -f helloapps-crd.yaml
 
-## Step 2 — Write the CRD (helloapps.yaml)
+> kubectl apply -f my-hello-app.yaml
 
-Create a file called helloapps-crd.yaml
+Running the operator:
 
-kubectl apply -f helloapps-crd.yaml
+> go run main.go 
 
-## Step 3 — Create a sample HelloApp
+## Modifications:
+If modify the yml:
 
-Make a file helloapp-sample.yaml
+> kubectl apply -f <FNAME.yaml>
 
-kubectl apply -f helloapp-sample.yaml
 
-## Step 4 — Write a controller skeleton
+If we want to change the secret:
+
+Change in the file itself then:
+> kubectl apply -f env-secret.yaml
+
+> kubectl rollout restart deploy my-hello
+
+## Running the app (locally)
+Option 1 — Port-forward:
+> kubectl port-forward svc/my-hello 8080:80
+
+Open http://localhost:8080/
+
+OR
+
+Option 2 — Minikube service:
+> minikube service hello-go -n hello --url
