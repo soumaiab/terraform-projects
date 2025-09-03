@@ -45,8 +45,8 @@ If anything changes in the go code, rebuild and increase the tag number. It is c
 Apply changes made to providers (only run if not done before/not changes):
 > tofu init -upgrade
 
-Apply the message
-> tofu apply -auto-approve -var="app_message=Hello from OpenTofu!"
+Set the message message in terraform.tfvars, then run  
+> tofu apply -auto-approve 
 
 Ensure it got deployed:
 > kubectl -n hello get deploy hello-go
@@ -60,13 +60,22 @@ Should see: "Listening on :8080".
 To run it:
 > kubectl -n hello port-forward svc/hello-go 8080:80
 
-To update the message, change the value in terraform.tfvars and run:
+OR 
+
+> minikube service hello-go -n hello --url
+
+### Updating the message
+Change the value in terraform.tfvars and run:
 > tofu apply -auto-approve
 
 > kubectl -n hello rollout status deploy/hello-go
 
+Then from k9s, delete the pod. The message should have been updated and visible from the website:
 > kubectl -n hello port-forward svc/hello-go 8080:80
 
+OR
+
+> minikube service hello-go -n hello --url
 
 #### Stopping minikube:
 > minikube stop
@@ -83,10 +92,12 @@ Check that your namespace & deployment are still there
 
 > kubectl -n hello get pods -l 'app.kubernetes.io/name=hello-go'
 
-If you see a pod with STATUS=Running, the Go app is up again.
-
 Port-forward the Service
 > kubectl -n hello port-forward svc/hello-go 8080:80
+
+OR
+
+> minikube service hello-go -n hello --url
 
 If the pod isn’t running
 > minikube image build -t hellogo:0.3 .

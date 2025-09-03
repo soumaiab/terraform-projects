@@ -1,1 +1,1 @@
-app_message = "Hello from a Secret!"
+app_message = "Hello from Soumaia :) !"
