@@ -25,7 +25,7 @@ If we want to change the secret:
 Change in the file itself then:
 > kubectl apply -f env-secret.yaml
 
-> kubectl rollout restart deploy my-hello
+No need for manual rollout (kubectl rollout restart deploy my-hello), the operator recreates the pod when we change and apply the new message.
 
 ## Running the app (locally)
 Option 1 — Port-forward:
