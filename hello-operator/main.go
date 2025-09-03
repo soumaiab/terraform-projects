@@ -13,6 +13,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -124,6 +125,43 @@ func main() {
 					fmt.Println("Error creating Deployment:", err)
 				} else {
 					fmt.Println("Created Deployment", name)
+				}
+			}
+
+			// Desired Service
+			svc := &corev1.Service{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      name,
+					Namespace: "default",
+				},
+				Spec: corev1.ServiceSpec{
+					Selector: map[string]string{"app": name},
+					Ports: []corev1.ServicePort{{
+						Protocol:   corev1.ProtocolTCP,
+						Port:       80,
+						TargetPort: intstr.FromInt(8080),
+					}},
+				},
+			}
+
+			// Check if Service exists
+			existingSvc, err := clientset.CoreV1().Services("default").Get(context.TODO(), name, metav1.GetOptions{})
+			if err == nil {
+				// Service exists → update spec (only selector + ports matter)
+				existingSvc.Spec = svc.Spec
+				_, err = clientset.CoreV1().Services("default").Update(context.TODO(), existingSvc, metav1.UpdateOptions{})
+				if err != nil {
+					fmt.Println("Error updating Service:", err)
+				} else {
+					fmt.Println("Updated Service", name)
+				}
+			} else {
+				// Create Service
+				_, err = clientset.CoreV1().Services("default").Create(context.TODO(), svc, metav1.CreateOptions{})
+				if err != nil {
+					fmt.Println("Error creating Service:", err)
+				} else {
+					fmt.Println("Created Service", name)
 				}
 			}
 
